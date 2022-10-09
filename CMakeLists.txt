@@ -3,4 +3,4 @@ project(Lab_Micros_2022 C)
 
 set(CMAKE_C_STANDARD 99)
 
-add_executable(Lab_Micros_2022 main.c)
+add_executable(Lab_Micros_2022 laboratorio_1/reto1.c laboratorio_1/reto1-1.c)

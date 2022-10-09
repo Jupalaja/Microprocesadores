@@ -1,6 +1,9 @@
 #include <stdio.h>
-
+/*
 int main() {
-    printf("Hello, World!\n");
+    printf("Reto 1 en progreso...\n");
     return 0;
 }
+*/
+
+
