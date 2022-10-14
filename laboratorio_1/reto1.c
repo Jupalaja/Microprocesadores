@@ -5,6 +5,7 @@
 /*
     Declaración de la función usando un puntero para que pueda ser definida después de main.
 */
+
 void leerDatos(int* n, double** nums_x, double** nums_y);
 void minimosCuadrados(int N, const double* nums_x, const double* nums_y, double *m, double *b, double *r);
 
@@ -13,14 +14,17 @@ int main() {
     int n;
     double *numbersX, *numbersY;
     double m = 0, b = 0, r = 0;
+
     /*
         Llamada a la función por referencia usando punteros para retornar multiples valores
         y para trabajar sobre las variables originales sin copiarlas, ahorrando memoria.
     */
+    
     leerDatos(&n, &numbersX, &numbersY);
     printf("Valores Iniciales:\n");
     for (int i = 0; i < n; ++i) {
         printf("x%d: %.4f\ty%d: %.4f\n", i, numbersX[i], i, numbersY[i]);
+
     }
     minimosCuadrados(n, numbersX, numbersY, &m, &b, &r);
 
@@ -43,7 +47,9 @@ int main() {
     arreglos, y punteros [double** nums_x] y [double** nums_y] para asignar memoria variable y hacer
     llamadas por referencia en la función main.
 */
+
 void leerDatos(int* n, double** nums_x, double** nums_y) {
+
     char num_in[sizeof(double)]; // Variable para recibir en formato texto desde la consola
 
     printf("Ingrese la longitud de los arreglos X y Y: \n");
@@ -85,5 +91,6 @@ void minimosCuadrados(int N, const double* nums_x, const double* nums_y, double*
     *b = (sumY*sumX2 - sumX*sumXY)/(N*sumX2 - (pow(fabs(sumX),2)));
     *r = (N*sumXY - sumX*sumY)/(sqrt((N*sumX2 - pow(sumX,2))*(N*sumY2 - pow(sumY,2))));
 }
+
 
 
