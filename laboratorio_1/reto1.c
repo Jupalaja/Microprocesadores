@@ -1,44 +1,82 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-double *leerDatos();
+/*
+    Declaración de la función usando un puntero para que pueda ser definida después de main.
+*/
+void leerDatos(int* n, double** nums_x, double** nums_y);
+void minimosCuadrados(int n, const double* nums_x, const double* nums_y, double *m, double *b, double *r);
 
 int main() {
     printf("Reto 1 en progreso...\n");
-    double *numbers = leerDatos(); //Leemos 2 datos
-    for(int i=0; i<sizeof(numbers); i=i+1)     {
-        printf("%lu",sizeof(numbers));
-        printf("%.4f", numbers[i]); //Cálculo de raíz Cuadrada
-        printf("\n");
+    int a;
+    double *numbersX, *numbersY;
+    double sumx, sumy, sumxy;
+    /*
+        Llamada a la función por referencia usando punteros para retornar multiples valores
+        y para trabajar sobre las variables originales sin copiarlas, ahorrando memoria.
+    */
+    leerDatos(&a, &numbersX, &numbersY);
+    for (int i = 0; i < a; ++i) {
+        printf("x%d: %.4f    y%d: %.4f\n", i, numbersX[i], i, numbersY[i]);
     }
+    minimosCuadrados(a, numbersX, numbersY, &sumx, &sumy, &sumxy);
+    printf("%.4f\n", sumx);
+    printf("%.4f\n", sumy);
+    printf("%.4f\n", sumxy);
     return 0;
 }
 
-// Función para ingresar los datos iniciales
-double *leerDatos() {
-    char num_par_char[2]; //Variable para recibir el número de parejas de datos
-    char num_in[8]; //Variable para recibir los datos de consola
-    double *nums_x; //Variable para almacenar los valores de
+/*
+    Para la función leerDatos utilizamos un puntero [int* n] para obtener el valor del tamaño de los
+    arreglos, y punteros [double** nums_x] y [double** nums_y] para asignar memoria variable y hacer
+    llamadas por referencia en la función main.
+*/
+void leerDatos(int* n, double** nums_x, double** nums_y) {
+    char num_in[sizeof(double)]; // Variable para recibir en formato texto desde la consola
 
     printf("Ingrese la longitud de los arreglos X y Y: \n");
-    scanf("%s", num_par_char); //Escaneo de la entrada del teclado
-    int num_par = atoi(num_par_char);
+    scanf("%d", n); // Escaneamos el valor de n: el tamaño de los arreglos a usar
+    printf("Ingreso %d números. \n", *n);
 
-    nums_x = (double *) malloc(2*num_par*sizeof(double));
+    /*
+        Debemos asignar suficiente memoria para los vectores X y Y, a saber: n x [Tamaño de double].
+    */
+    *nums_x = malloc(*n * sizeof(double));
+    *nums_y = malloc(*n * sizeof(double));
 
-
-    printf("Ingrese Los valores de x: \n");
-    for(int i=0; i<num_par;i=i+1)     {
-        scanf("%s",num_in); //Escaneo de la entrada del teclado
-        nums_x[i]=atof(num_in); //Conversión de string a double
+    /*
+        Guardamos el valor almacenado en la variable temporal [num_in] en la posición correspondiente
+        a nuestros punteros/arreglos [*nums_x] y [*nums_y].
+    */
+    for(int i=0; i<*n;i=i+1) {
+        printf("Ingrese el valor de x%d: ", i);
+        scanf("%s",num_in);
+        *(*nums_x+i) = strtod(num_in, NULL);
+        printf("Ingrese el valor de y%d: ", i);
+        scanf("%s",num_in);
+        *(*nums_y+i) = strtod(num_in, NULL);
+        printf("\n"); // Salto de linea
     }
+}
 
-    printf("Ingrese Los valores de y: \n");
-    for(int j=num_par; j < num_par * 2; j= j + 1)     {
-        scanf("%s",num_in); //Escaneo de la entrada del teclado
-        nums_x[j]=atof(num_in); //Conversión de string a double
+void minimosCuadrados(int n, const double* nums_x, const double* nums_y, double* m, double* b, double* r){
+    double sumX = 0;
+    double sumY = 0;
+    double sumXY = 0;
+
+    for (int i = 0; i < n; ++i) {
+        sumX += *(nums_x+i);
     }
-    return nums_x;
+    for (int i = 0; i < n; ++i) {
+        sumY += *(nums_y+i);
+    }
+    for (int i = 0; i < n; ++i) {
+        sumXY += (*(nums_x+i))*(*(nums_y+i));
+    }
+    *m = sumX;
+    *b = sumY;
+    *r = sumXY;
 }
 
 
