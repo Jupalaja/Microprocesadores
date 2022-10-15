@@ -1,16 +1,5 @@
 <component name="ProjectRunConfigurationManager">
-  <configuration default="false"
-                 name="Lab_Micros_2022"
-                 type="CMakeRunConfiguration"
-                 factoryName="Application"
-                 REDIRECT_INPUT="false"
-                 ELEVATE="false"
-                 USE_EXTERNAL_CONSOLE="false"
-                 PASS_PARENT_ENVS_2="true"
-                 PROJECT_NAME="Lab_Micros_2022"
-                 TARGET_NAME="Lab_Micros_2022"
-                 CONFIG_NAME="Debug"
-                 RUN_PATH="Lab_Micros_2022">
+  <configuration default="false" name="Lab_Micros_2022" type="CMakeRunConfiguration" factoryName="Application" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="Lab_Micros_2022" TARGET_NAME="Lab_Micros_2022" CONFIG_NAME="Debug" RUN_PATH="Lab_Micros_2022">
     <method v="2">
       <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
     </method>
