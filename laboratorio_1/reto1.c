@@ -9,6 +9,7 @@
 void modoManual(int* n, double** nums_x, double** nums_y);
 void modoArchivo(int* n, double** nums_x, double** nums_y);
 void minimosCuadrados(int N, const double* nums_x, const double* nums_y, double *m, double *b, double *r);
+void guardarArchivo(int *modo, int N, const double* nums_x, const double* nums_y, double m, double b, double r);
 
 int main() {
     printf("Reto 1 en progreso...\n");
@@ -20,42 +21,48 @@ int main() {
         [m]: Pendiente de la recta
         [b]: Corte con el eje Y
         [r]: Correlación de Pearson
+        [guardar]: variable para determinar si se exportan los datos
     */
     int N, modo=0;
     double *numbersX, *numbersY;
-    double m = 0, b = 0, r = 0;
+    double m, b, r;
 
     /*
         Menú para Seleccionar el tipo de entrada de datos, la llamada a las funciones se realiza
         pasando parámetros por referencia utilizando punteros, optimizando el uso de la memoria.
     */
     do {
+        N = 0, m = 0, b = 0, r = 0;
+        numbersY = NULL, numbersX = NULL;
+
         printf("\nSeleccione un Modo de Ingreso de datos: "
                "\n·)  Ingrese 1 para Ingreso Manual de datos"
                "\n·)  Ingrese 2 para Ingreso de datos desde Archivo"
                "\n·)  Ingrese 3 para salir\n\t");
-        scanf("%d", &modo);
+        scanf(" %d", &modo);
         switch (modo) {
             case 1:
                 printf("Seleccionó Modo Manual\n");
                 modoManual(&N, &numbersX, &numbersY);
                 minimosCuadrados(N, numbersX, numbersY, &m, &b, &r);
+                guardarArchivo(&modo, N, numbersX, numbersY, m, b, r);
                 break;
             case 2:
                 printf("Seleccionó Modo Archivo\n");
                 modoArchivo(&N, &numbersX, &numbersY);
                 minimosCuadrados(N, numbersX, numbersY, &m, &b, &r);
+                guardarArchivo(&modo,N, numbersX, numbersY, m, b, r);
                 break;
             case 3:
                 printf("Hasta Pronto :)");
                 break;
             default:
                 printf("Opción no valida");
+                break;
         }
     } while (modo != 3);
     return 0;
 }
-
 /*
     Esta función utiliza un puntero [*n] para obtener el valor del tamaño de los arreglos
     y punteros dobles [**nums_x] y [**nums_y] para crear vectores que pasaremos por referencia.
@@ -87,10 +94,6 @@ void modoManual(int* n, double** nums_x, double** nums_y){
         scanf("%s",num_in);
         *(*nums_y+i) = strtod(num_in, NULL);
         printf("\n");
-    }
-    printf("Valores Iniciales:\n");
-    for (int i = 0; i < *n; ++i) {
-        printf("x%d: %.2f\t\ty%d: %.2f\n", i, *(*nums_x+i), i, *(*nums_y+i));
     }
 }
 
@@ -126,6 +129,7 @@ void modoArchivo(int* n, double** nums_x, double** nums_y){
     fp = fopen(nombreArchivo,"r");
     if (!fp){
         printf("No se pudo abrir el archivo\n");
+        return;
     }
     while (feof(fp) != true) {
         fgets(row, MAXCHAR, fp);
@@ -173,7 +177,7 @@ void minimosCuadrados(int N, const double* nums_x, const double* nums_y, double*
     *r = (N*sumXY - sumX*sumY)/(sqrt((N*sumX2 - pow(sumX,2))*(N*sumY2 - pow(sumY,2))));
 
     /*
-        Verificación de valores indefinidos cuando alguno de los valores resultantes es igual a +∞ o -∞.
+        Verificación de casos indefinidos cuando alguno de los valores resultantes es igual a +∞ o -∞.
     */
     if(isnan(*m) || isnan(*b) || isnan(*r)) {
         printf("\nError: se han obtenido valores indeterminados, verifique los parámetros iniciales.\n");
@@ -187,5 +191,52 @@ void minimosCuadrados(int N, const double* nums_x, const double* nums_y, double*
     }
 }
 
+void guardarArchivo(int* modo ,int N, const double* nums_x, const double* nums_y, double m, double b, double r){
+    /*
+        Declaramos las variables a usar:
+        [*fp]: Variable [FILE] para almacenar nuestro archivo csv de entrada
+        [nombreArchivo]: Arreglo que contiene el nombre de nuestro archivo a crear
+        [nombreArchivo]: variable usada para decidir la exportación de los datos
+    */
+    FILE *fp;
+    char nombreArchivo[20];
+    char exportar;
+    printf("\nDesea exportar los datos?"
+           "\n\t Presione (Y) para exportar"
+           "\n\t Presione otra tecla para continuar\n");
+    /*
+        Lectura de entrada en la variable exportar y asignación a variable [nombreArchivo].
+    */
+    scanf(" %s", &exportar);
+    if (exportar == 'y'){
+        printf("\nIngrese el nombre del archivo de salida (No incluya la extensión): ");
+        scanf(" %s", nombreArchivo);
+        printf("\nCreando archivo...");
+        strcat(nombreArchivo,".csv");
 
+        /*
+            Creación de nuestro archivo usando la función [fopen] con el parámetro "w+".
+        */
+        fp=fopen(nombreArchivo,"w+");
+        fprintf(fp,"\nValores Iniciales:\n");
+        for (int i = 0; i < N; ++i) {
+            fprintf(fp,"x%d: %.2f, y%d: %.2f\n", i, *(nums_x+i), i, *(nums_y+i));
+        }
+        /*
+            Verificación de casos indefinidos cuando alguno de los valores resultantes es igual a +∞ o -∞.
+        */
+        if(isnan(m) || isnan(b) || isnan(r)) {
+            fprintf(fp,"\nError: se han obtenido valores indeterminados, verifique los parametros iniciales.\n");
+        } else {
+            fprintf(fp,"\nParametros de salida:\n"
+                       "m = %f\n"
+                       "b = %f\n"
+                       "r = %f\n"
+                       "\nFuncion resultante: \t"
+                       "y = %.4f*x + %.4f, Correlacion: %.4f \n", m, b, r, m, b, r);
+        }
+        fclose(fp);
+        printf("\n Archivo \'%s\'  creado exitosamente.\n", nombreArchivo);
+    }
+}
 
