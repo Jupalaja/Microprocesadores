@@ -12,7 +12,7 @@ void minimosCuadrados(int N, const double* nums_x, const double* nums_y, double 
 void guardarArchivo(int *modo, int N, const double* nums_x, const double* nums_y, double m, double b, double r);
 
 int main() {
-    printf("Reto 1 en progreso...\n");
+    printf("Reto 1 Terminado\n");
     /*
         Declaración de variables a usar:
         [N]: Tamaño de los vectores X y Y
