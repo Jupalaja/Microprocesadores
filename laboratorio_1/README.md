@@ -32,6 +32,6 @@ Utilice el conjunto de datos de la Tabla 1 para probar el programa:
 Tabla 1: datos de entrada del programa.
 </p>
 
-El día de la presentación se proporcionarán los datos para hacer la prueba tanto de ingreso manual, como mediante el archivo csv.
-Para leer archivos de entrada, se deben llevar a la carpeta laboratorio_1/data.
-Los csv exportados se encuentran en la carpeta build del projecto: /cmake-build-debug.
+- El día de la presentación se proporcionarán los datos para hacer la prueba tanto de ingreso manual, como mediante el archivo csv.
+- Para leer archivos de entrada, se deben llevar a la carpeta laboratorio_1/data.
+- Los csv exportados se encuentran en la carpeta build del projecto: /cmake-build-debug.
