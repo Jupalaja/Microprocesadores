@@ -1,4 +1,31 @@
 ## RETO NO. 1: REGRESIÓN LINEAL MEDIANTE MÍNIMOS CUADRADOS
+
+
+
+Mínimos cuadrados es una técnica de análisis numérico enmarcada dentro de la optimización matemática, en la que, dados un conjunto de pares ordenados —variable independiente, variable dependiente— y una familia de funciones, se intenta encontrar la función continua, dentro de dicha familia, que mejor se aproxime a los datos (un "mejor ajuste"), de acuerdo con el criterio de mínimo error cuadrático.
+
+Cuando la función para aproximar los datos es una línea recta de la forma:
+
+<p align="center">
+  <img
+    width="200"
+    src="https://user-images.githubusercontent.com/82126880/196839691-a55083c6-0199-4e50-9191-8defb7f3df71.png"
+  >
+
+Donde m es la pendiente y b el intercepto con el eje Y, el método de mínimos cuadrados establece que:
+
+<p align="center">
+  <img
+    width="500"
+    src="https://user-images.githubusercontent.com/82126880/196840423-38cbd980-b62e-40cc-9917-a644b27078c0.png"
+  >
+
+
+
+
+
+Donde N es el número de parejas de datos x,y de la serie y r es el coeficiente de correlación de Pearson, el cual es una media estadística de la correlación entre dos conjuntos de datos. El valor de rangos del coeficiente es de 1 (correlación perfecta) y -1 (correlación negativa).
+ 
 ***Actividad 1.2:***  Modifique el programa anterior de la siguiente manera que cumpla las siguientes especificaciones:
 
 |    | Tarea            | Descripción                                                                                                                                                                                                                                                                                                                                                                                        | Puntaje |
@@ -32,6 +59,6 @@ Utilice el conjunto de datos de la Tabla 1 para probar el programa:
 Tabla 1: datos de entrada del programa.
 </p>
 
-- El día de la presentación se proporcionarán los datos para hacer la prueba tanto de ingreso manual, como mediante el archivo csv.
-- Para leer archivos de entrada, se deben llevar a la carpeta laboratorio_1/data.
-- Los csv exportados se encuentran en la carpeta build del projecto: /cmake-build-debug.
+El día de la presentación se proporcionarán los datos para hacer la prueba tanto de ingreso manual, como mediante el archivo csv.
+* Para leer archivos de entrada, se deben llevar a la carpeta laboratorio_1/data.
+* Los archivos csv exportados se encuentran en la carpeta build del projecto: /cmake-build-debug.
