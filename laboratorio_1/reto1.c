@@ -3,13 +3,20 @@
 #include <math.h>
 #include <stdbool.h>
 #include <string.h>
+#include <ctype.h>
+
 #define MAXCHAR 1000
 
-
+char *trim(char *s);
 void modoManual(int* n, double** nums_x, double** nums_y);
 void modoArchivo(int* n, double** nums_x, double** nums_y);
 void minimosCuadrados(int N, const double* nums_x, const double* nums_y, double *m, double *b, double *r);
 void guardarArchivo(int *modo, int N, const double* nums_x, const double* nums_y, double m, double b, double r);
+struct Dato leerDatosDouble(char* character, bool isDouble);
+struct Dato{
+    double num_out;
+    char char_out[20];
+};
 
 int main() {
     printf("Reto 1 Terminado\n");
@@ -26,6 +33,7 @@ int main() {
     int N, modo=0;
     double *numbersX, *numbersY;
     double m, b, r;
+    char modoChar[sizeof(double)];
 
     /*
         Menú para Seleccionar el tipo de entrada de datos, la llamada a las funciones se realiza
@@ -39,7 +47,8 @@ int main() {
                "\n·)  Ingrese 1 para Ingreso Manual de datos"
                "\n·)  Ingrese 2 para Ingreso de datos desde Archivo"
                "\n·)  Ingrese 3 para salir\n\t");
-        scanf(" %d", &modo);
+
+        modo = (int) leerDatosDouble(modoChar, true).num_out;
         switch (modo) {
             case 1:
                 printf("Seleccionó Modo Manual\n");
@@ -63,6 +72,11 @@ int main() {
     } while (modo != 3);
     return 0;
 }
+
+/*
+    Función para leer datos de entrada sin errores, evitando la función [scanf]
+*/
+
 /*
     Esta función utiliza un puntero [*n] para obtener el valor del tamaño de los arreglos
     y punteros dobles [**nums_x] y [**nums_y] para crear vectores que pasaremos por referencia.
@@ -73,7 +87,7 @@ void modoManual(int* n, double** nums_x, double** nums_y){
     */
     char num_in[sizeof(double)];
     printf("Ingrese la longitud de los arreglos X y Y: \n");
-    scanf("%d", n); //
+    *n = (int) leerDatosDouble(num_in, true).num_out;
     printf("Ingreso %d números. \n", *n);
 
     /*
@@ -88,11 +102,9 @@ void modoManual(int* n, double** nums_x, double** nums_y){
     */
     for(int i=0; i<*n;i=i+1) {
         printf("Ingrese el valor de x%d: ", i);
-        scanf("%s",num_in);
-        *(*nums_x+i) = strtod(num_in, NULL);
+        *(*nums_x+i) = leerDatosDouble(num_in, true).num_out;
         printf("Ingrese el valor de y%d: ", i);
-        scanf("%s",num_in);
-        *(*nums_y+i) = strtod(num_in, NULL);
+        *(*nums_y+i) = leerDatosDouble(num_in, true).num_out;
         printf("\n");
     }
 }
@@ -111,7 +123,7 @@ void modoArchivo(int* n, double** nums_x, double** nums_y){
     */
     FILE* fp;
     char row[MAXCHAR];
-    char nombreArchivo[20];
+    char* nombreArchivo;
     char* token;
     int count = 0;
 
@@ -120,13 +132,13 @@ void modoArchivo(int* n, double** nums_x, double** nums_y){
         para ser almacenado.
     */
     printf("Ingrese el nombre del archivo (Incluya la extensión):\n");
-    scanf("%s", nombreArchivo);
-
+    nombreArchivo = leerDatosDouble(nombreArchivo, false).char_out;
+    printf("\n%s\n", nombreArchivo);
     /*
         Abrimos la primera vez los datos en nuestro archivo para conocer el número de
         vectores dado, después asignamos la memoria correspondiente a nuestros vectores [nums_x] y [num_y].
     */
-    fp = fopen(nombreArchivo,"r");
+    fp = fopen(trim(nombreArchivo),"r");
     if (!fp){
         printf("No se pudo abrir el archivo\n");
         return;
@@ -143,7 +155,7 @@ void modoArchivo(int* n, double** nums_x, double** nums_y){
         Recorremos una segunda vez los datos en nuestro archivo para obtener los valores de X y Y de
         cada renglón y pasarlos a los vectores [nums_x] y [num_y].
     */
-    fp = fopen(nombreArchivo,"r");
+    fp = fopen(trim(nombreArchivo),"r");
     int i = 0;
     while (feof(fp) != true) {
         fgets(row, MAXCHAR, fp);
@@ -199,18 +211,18 @@ void guardarArchivo(int* modo ,int N, const double* nums_x, const double* nums_y
         [nombreArchivo]: variable usada para decidir la exportación de los datos
     */
     FILE *fp;
-    char nombreArchivo[20];
-    char exportar;
+    char* nombreArchivo;
+    char *exportar = NULL;
     printf("\nDesea exportar los datos?"
            "\n\t Presione (Y) para exportar"
            "\n\t Presione otra tecla para continuar\n");
     /*
         Lectura de entrada en la variable exportar y asignación a variable [nombreArchivo].
     */
-    scanf(" %s", &exportar);
-    if (exportar == 'y'){
+    exportar = leerDatosDouble(exportar, false).char_out;
+    if (*exportar == 'y'){
         printf("\nIngrese el nombre del archivo de salida (No incluya la extensión): ");
-        scanf(" %s", nombreArchivo);
+        nombreArchivo = trim(leerDatosDouble(exportar,false).char_out);
         printf("\nCreando archivo...");
         strcat(nombreArchivo,".csv");
 
@@ -218,9 +230,9 @@ void guardarArchivo(int* modo ,int N, const double* nums_x, const double* nums_y
             Creación de nuestro archivo usando la función [fopen] con el parámetro "w+".
         */
         fp=fopen(nombreArchivo,"w+");
-        fprintf(fp,"\nValores Iniciales:\n");
+        fprintf(fp,"\nValores Iniciales:,\n");
         for (int i = 0; i < N; ++i) {
-            fprintf(fp,"x%d: %.2f, y%d: %.2f\n", i, *(nums_x+i), i, *(nums_y+i));
+            fprintf(fp,"x%d: %=.2f, y%d: %.2f\n", i, *(nums_x+i), i, *(nums_y+i));
         }
         /*
             Verificación de casos indefinidos cuando alguno de los valores resultantes es igual a +∞ o -∞.
@@ -240,3 +252,30 @@ void guardarArchivo(int* modo ,int N, const double* nums_x, const double* nums_y
     }
 }
 
+struct Dato leerDatosDouble(char *character, bool isDouble) {
+    char* t;
+    struct Dato salida;
+    char* end = NULL;
+    if (isDouble){
+        while(fgets(character, sizeof(character),stdin)) {
+            salida.num_out = strtod(character, &end);
+            if (end == character || *end != '\n') {
+                printf("Opcion no valida, intente nuevamente\n");
+            } else break;
+        }
+    } else {
+        fgets(salida.char_out, sizeof(salida.char_out), stdin);
+    }
+    return salida;
+}
+
+char *trim(char *s) {
+    char *ptr;
+    if (!s)
+        return NULL;   // handle NULL string
+    if (!*s)
+        return s;      // handle empty string
+    for (ptr = s + strlen(s) - 1; (ptr >= s) && isspace(*ptr); --ptr);
+    ptr[1] = '\0';
+    return s;
+}

@@ -1,3 +1,4 @@
 /.idea/*
 !/.idea/runConfigurations
 cmake-build-debug/*
+/.clang-tidy
