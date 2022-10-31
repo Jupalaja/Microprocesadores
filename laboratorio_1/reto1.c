@@ -11,12 +11,18 @@ char *trim(char *s);
 void modoManual(int* n, double** nums_x, double** nums_y);
 void modoArchivo(int* n, double** nums_x, double** nums_y);
 void minimosCuadrados(int N, const double* nums_x, const double* nums_y, double *m, double *b, double *r);
-void guardarArchivo(int *modo, int N, const double* nums_x, const double* nums_y, double m, double b, double r);
-struct Dato leerDatosDouble(char* character, bool isDouble);
+void guardarArchivo(int N, const double* nums_x, const double* nums_y, double m, double b, double r);
+struct Dato leerDatos(char* character, bool isDouble);
+
+/*
+    Struct para poder retornar dos tipos de dato distinto ([char*] y [double]) de la función [leerDatos]
+*/
+// TODO: Buscar una implementacion alternativa sin utilizar el struct
 struct Dato{
     double num_out;
     char char_out[20];
 };
+
 
 int main() {
     printf("Reto 1 Terminado\n");
@@ -30,7 +36,7 @@ int main() {
         [r]: Correlación de Pearson
         [guardar]: variable para determinar si se exportan los datos
     */
-    int N, modo=0;
+    int N, modo;
     double *numbersX, *numbersY;
     double m, b, r;
     char modoChar[sizeof(double)];
@@ -44,38 +50,35 @@ int main() {
         numbersY = NULL, numbersX = NULL;
 
         printf("\nSeleccione un Modo de Ingreso de datos: "
-               "\n·)  Ingrese 1 para Ingreso Manual de datos"
-               "\n·)  Ingrese 2 para Ingreso de datos desde Archivo"
-               "\n·)  Ingrese 3 para salir\n\t");
+               "\n)  Ingrese 1 para Ingreso Manual de datos"
+               "\n)  Ingrese 2 para Ingreso de datos desde Archivo"
+               "\n)  Ingrese 3 para salir\n\t");
 
-        modo = (int) leerDatosDouble(modoChar, true).num_out;
+        modo = (int) leerDatos(modoChar, true).num_out;
         switch (modo) {
             case 1:
-                printf("Seleccionó Modo Manual\n");
+                printf("Selecciono Modo Manual\n");
                 modoManual(&N, &numbersX, &numbersY);
                 minimosCuadrados(N, numbersX, numbersY, &m, &b, &r);
-                guardarArchivo(&modo, N, numbersX, numbersY, m, b, r);
+                guardarArchivo(N, numbersX, numbersY, m, b, r);
                 break;
             case 2:
-                printf("Seleccionó Modo Archivo\n");
+                printf("Selecciono Modo Archivo\n");
                 modoArchivo(&N, &numbersX, &numbersY);
                 minimosCuadrados(N, numbersX, numbersY, &m, &b, &r);
-                guardarArchivo(&modo,N, numbersX, numbersY, m, b, r);
+                guardarArchivo(N, numbersX, numbersY, m, b, r);
                 break;
             case 3:
                 printf("Hasta Pronto :)");
                 break;
             default:
-                printf("Opción no valida");
+                printf("Opcion no valida");
                 break;
         }
     } while (modo != 3);
     return 0;
 }
 
-/*
-    Función para leer datos de entrada sin errores, evitando la función [scanf]
-*/
 
 /*
     Esta función utiliza un puntero [*n] para obtener el valor del tamaño de los arreglos
@@ -87,8 +90,8 @@ void modoManual(int* n, double** nums_x, double** nums_y){
     */
     char num_in[sizeof(double)];
     printf("Ingrese la longitud de los arreglos X y Y: \n");
-    *n = (int) leerDatosDouble(num_in, true).num_out;
-    printf("Ingreso %d números. \n", *n);
+    *n = (int) leerDatos(num_in, true).num_out;
+    printf("Ingreso %d numeros. \n", *n);
 
     /*
         Asignamos suficiente memoria para los vectores X y Y, a saber: n x [Tamaño de double].
@@ -102,9 +105,9 @@ void modoManual(int* n, double** nums_x, double** nums_y){
     */
     for(int i=0; i<*n;i=i+1) {
         printf("Ingrese el valor de x%d: ", i);
-        *(*nums_x+i) = leerDatosDouble(num_in, true).num_out;
+        *(*nums_x+i) = leerDatos(num_in, true).num_out;
         printf("Ingrese el valor de y%d: ", i);
-        *(*nums_y+i) = leerDatosDouble(num_in, true).num_out;
+        *(*nums_y+i) = leerDatos(num_in, true).num_out;
         printf("\n");
     }
 }
@@ -119,11 +122,11 @@ void modoArchivo(int* n, double** nums_x, double** nums_y){
         [*fp]: Variable para almacenar nuestro archivo csv de entrada
         [row]: Arreglo que contiene un renglón leído completo.
         [token]: Variable para separar y obtener los valores individuales de X y Y de cada renglón
-        [count]: variable para contar los renglones leídos y hallar el valor de n
+        [count]: variable para contar los renglones leídos y hallar el valor de *n
     */
     FILE* fp;
     char row[MAXCHAR];
-    char* nombreArchivo;
+    char *nombreArchivo = NULL;
     char* token;
     int count = 0;
 
@@ -131,22 +134,23 @@ void modoArchivo(int* n, double** nums_x, double** nums_y){
         Solicitamos al usuario el nombre del archivo a leer, ubicado en la sub-carpeta [/data]
         para ser almacenado.
     */
-    printf("Ingrese el nombre del archivo (Incluya la extensión):\n");
-    nombreArchivo = leerDatosDouble(nombreArchivo, false).char_out;
+    printf("Ingrese el nombre del archivo (Incluya la extension):\n");
+    nombreArchivo = trim(leerDatos(nombreArchivo, false).char_out);
     printf("\n%s\n", nombreArchivo);
+
     /*
-        Abrimos la primera vez los datos en nuestro archivo para conocer el número de
-        vectores dado, después asignamos la memoria correspondiente a nuestros vectores [nums_x] y [num_y].
+        Abrimos por primera vez los datos en nuestro archivo para conocer el número de vectores dado,
+        después asignamos la memoria correspondiente a nuestros vectores [nums_x] y [num_y].
     */
-    fp = fopen(trim(nombreArchivo),"r");
+    fp = fopen(nombreArchivo,"r");
     if (!fp){
         printf("No se pudo abrir el archivo\n");
         return;
     }
-    while (feof(fp) != true) {
-        fgets(row, MAXCHAR, fp);
+    while (fgets(row, MAXCHAR, fp)) {
         count ++;
     }
+
     *n = count;
     *nums_x = malloc(*n * sizeof(double));
     *nums_y = malloc(*n * sizeof(double));
@@ -155,16 +159,16 @@ void modoArchivo(int* n, double** nums_x, double** nums_y){
         Recorremos una segunda vez los datos en nuestro archivo para obtener los valores de X y Y de
         cada renglón y pasarlos a los vectores [nums_x] y [num_y].
     */
-    fp = fopen(trim(nombreArchivo),"r");
+    fp = fopen(nombreArchivo,"r");
     int i = 0;
-    while (feof(fp) != true) {
-        fgets(row, MAXCHAR, fp);
+    while (fgets(row, MAXCHAR, fp)) {
         token = strtok(row, ",");
         *(*nums_x+i) = strtod(token, NULL);
         token = strtok(NULL, ",");
         *(*nums_y+i) = strtod(token, NULL);
         i ++;
     }
+    printf("\nGot chu bitch, \n%d", count);
 }
 
 /*
@@ -194,16 +198,16 @@ void minimosCuadrados(int N, const double* nums_x, const double* nums_y, double*
     if(isnan(*m) || isnan(*b) || isnan(*r)) {
         printf("\nError: se han obtenido valores indeterminados, verifique los parámetros iniciales.\n");
     } else {
-        printf("\nParámetros de salida:\n");
+        printf("\nParametros de salida:\n");
         printf("m = %f\n", *m);
         printf("b = %f\n", *b);
         printf("r = %f\n", *r);
-        printf("\nFunción resultante: \t");
-        printf("y = %.4f*x + %.4f, Correlación: %.4f \n", *m,*b,*r);
+        printf("\nFuncion resultante: \t");
+        printf("y = %.4f*x + %.4f, Correlacion: %.4f \n", *m,*b,*r);
     }
 }
 
-void guardarArchivo(int* modo ,int N, const double* nums_x, const double* nums_y, double m, double b, double r){
+void guardarArchivo(int N, const double* nums_x, const double* nums_y, double m, double b, double r){
     /*
         Declaramos las variables a usar:
         [*fp]: Variable [FILE] para almacenar nuestro archivo csv de entrada
@@ -219,10 +223,10 @@ void guardarArchivo(int* modo ,int N, const double* nums_x, const double* nums_y
     /*
         Lectura de entrada en la variable exportar y asignación a variable [nombreArchivo].
     */
-    exportar = leerDatosDouble(exportar, false).char_out;
+    exportar = leerDatos(exportar, false).char_out;
     if (*exportar == 'y'){
-        printf("\nIngrese el nombre del archivo de salida (No incluya la extensión): ");
-        nombreArchivo = trim(leerDatosDouble(exportar,false).char_out);
+        printf("\nIngrese el nombre del archivo de salida (No incluya la extension): ");
+        nombreArchivo = trim(leerDatos(exportar, false).char_out);
         printf("\nCreando archivo...");
         strcat(nombreArchivo,".csv");
 
@@ -232,7 +236,7 @@ void guardarArchivo(int* modo ,int N, const double* nums_x, const double* nums_y
         fp=fopen(nombreArchivo,"w+");
         fprintf(fp,"\nValores Iniciales:,\n");
         for (int i = 0; i < N; ++i) {
-            fprintf(fp,"x%d: %=.2f, y%d: %.2f\n", i, *(nums_x+i), i, *(nums_y+i));
+            fprintf(fp,"x%d: %.2f, y%d: %.2f\n", i, *(nums_x+i), i, *(nums_y+i));
         }
         /*
             Verificación de casos indefinidos cuando alguno de los valores resultantes es igual a +∞ o -∞.
@@ -252,8 +256,11 @@ void guardarArchivo(int* modo ,int N, const double* nums_x, const double* nums_y
     }
 }
 
-struct Dato leerDatosDouble(char *character, bool isDouble) {
-    char* t;
+/*
+    Función para leer datos de entrada sin errores, evitando la función [scanf], propensa a errores.
+*/
+struct Dato leerDatos(char *character, bool isDouble) {
+    //TODO: Cambiar la funcion para pasar datos por referencia
     struct Dato salida;
     char* end = NULL;
     if (isDouble){
@@ -269,6 +276,9 @@ struct Dato leerDatosDouble(char *character, bool isDouble) {
     return salida;
 }
 
+/*
+    Función para recortar los strings de entrada y evitar errores de lectura de entrada de texto
+*/
 char *trim(char *s) {
     char *ptr;
     if (!s)
