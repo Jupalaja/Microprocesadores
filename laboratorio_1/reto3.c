@@ -1,6 +1,6 @@
 #include<stdio.h>
 //TODO: Replace <conio.h>
-#include<conio.h>
+//#include<conio.h>
 #include <stdlib.h>
 #include <string.h>
 
@@ -210,7 +210,7 @@ int main() {
                 printf("El valor esta fuera de rango");
         }
         //TODO: Replace getch function
-        getch();
+        //getch();
         return 0;
 
     }while(valor!=0);
