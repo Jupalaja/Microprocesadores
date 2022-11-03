@@ -12,7 +12,6 @@ void modoManual(int* n, double** nums_x, double** nums_y);
 void modoArchivo(int* n, double** nums_x, double** nums_y);
 void minimosCuadrados(int N, const double* nums_x, const double* nums_y, double *m, double *b, double *r);
 void guardarArchivo(int N, const double* nums_x, const double* nums_y, double m, double b, double r);
-void leerDato(char** character);
 
 int main() {
     /*
@@ -123,8 +122,7 @@ void modoArchivo(int* n, double** nums_x, double** nums_y){
         para ser almacenado.
     */
     printf("Ingrese el nombre del archivo (Incluya la extension):\n");
-
-    leerDato(&nombreArchivo);
+    nombreArchivo = trim(fgets(temp, sizeof(temp), stdin));
     printf("\n Leyendo %s...\n", nombreArchivo);
 
     /*
@@ -211,10 +209,10 @@ void guardarArchivo(int N, const double* nums_x, const double* nums_y, double m,
     /*
         Lectura de entrada en la variable exportar y asignación a variable [nombreArchivo].
     */
-    leerDato(&exportar);
+    exportar = trim(fgets(temp, sizeof(temp), stdin));
     if (*exportar == 'y'){
         printf("\nIngrese el nombre del archivo de salida (No incluya la extension): ");
-        leerDato(&nombreArchivo);
+        nombreArchivo = trim(fgets(temp, sizeof(temp), stdin));
         printf("\nCreando archivo...");
         strcat(nombreArchivo,".csv");
 
@@ -242,13 +240,6 @@ void guardarArchivo(int N, const double* nums_x, const double* nums_y, double m,
         fclose(fp);
         printf("\n Archivo \'%s\'  creado exitosamente.\n", nombreArchivo);
     }
-}
-
-/*
-    Función para leer datos de entrada sin errores, evitando la función [scanf], propensa a errores.
-*/
-void leerDato(char** character) {
-    *character = trim(fgets(temp, sizeof(temp), stdin));
 }
 
 /*
